@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -29,6 +29,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ASP.NET\ASP.NET.csproj" />
+    <ProjectReference Include="..\CAMERA\CAMERA.csproj" />
+    <ProjectReference Include="..\COMMUNICATION\COMMUNICATION.csproj" />
+    <ProjectReference Include="..\HELPER\HELPER.csproj" />
+    <ProjectReference Include="..\MES\MES.csproj" />
     <ProjectReference Include="..\SQL\SQL.csproj" />
     <ProjectReference Include="..\Framework2Core\Framework2Core.csproj" />
   </ItemGroup>

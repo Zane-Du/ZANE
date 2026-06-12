@@ -1,5 +1,15 @@
 <Solution>
+  <Project Path="ASP.NET/ASP.NET.csproj" Id="380036c8-6f02-4c56-999f-def06ff2dcc8" />
+  <Project Path="CAMERA/CAMERA.csproj" Id="1ae809f5-f9b6-4687-bb6f-ece366856fac" />
+  <Project Path="COMMUNICATION/COMMUNICATION.csproj" Id="8cda1f07-4ac3-4235-8f3b-c31e2e84bfc4" />
   <Project Path="Framework2Core/Framework2Core.csproj" Id="a71ed809-f3e2-4799-a39c-d1393a4c58b1" />
+  <Project Path="HELPER/HELPER.csproj" Id="ac36cdaa-dfb9-473a-818d-934ec4acc999" />
+  <Project Path="MES/MES.csproj" Id="aa159fd0-2544-4441-966c-a3792698e1a0" />
   <Project Path="SQL/SQL.csproj" />
-  <Project Path="ZANE/ZANE.csproj" />
+  <Project Path="ZANE/ZANE.csproj">
+    <BuildDependency Project="ASP.NET/ASP.NET.csproj" />
+    <BuildDependency Project="CAMERA/CAMERA.csproj" />
+    <BuildDependency Project="HELPER/HELPER.csproj" />
+    <BuildDependency Project="MES/MES.csproj" />
+  </Project>
 </Solution>

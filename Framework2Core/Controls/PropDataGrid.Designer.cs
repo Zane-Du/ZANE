@@ -155,7 +155,7 @@
             this.btnSet.IsRadius = true;
             this.btnSet.IsShowRect = true;
             this.btnSet.IsShowTips = false;
-            this.btnSet.Location = new System.Drawing.Point(131, 0);
+            this.btnSet.Location = new System.Drawing.Point(-19, 0);
             this.btnSet.Margin = new System.Windows.Forms.Padding(0, 0, 0, 5);
             this.btnSet.Name = "btnSet";
             this.btnSet.RectColor = System.Drawing.Color.Gray;
@@ -171,10 +171,10 @@
             // 
             this.lblModelName.AutoSize = true;
             this.lblModelName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblModelName.Location = new System.Drawing.Point(181, 0);
+            this.lblModelName.Location = new System.Drawing.Point(31, 0);
             this.lblModelName.Margin = new System.Windows.Forms.Padding(0);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(85, 17);
+            this.lblModelName.Size = new System.Drawing.Size(169, 31);
             this.lblModelName.TabIndex = 3;
             this.lblModelName.Text = "型号：Default";
             this.lblModelName.Visible = false;
@@ -183,10 +183,10 @@
             // 
             this.lblVisionName.AutoSize = true;
             this.lblVisionName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblVisionName.Location = new System.Drawing.Point(266, 0);
+            this.lblVisionName.Location = new System.Drawing.Point(200, 0);
             this.lblVisionName.Margin = new System.Windows.Forms.Padding(0);
             this.lblVisionName.Name = "lblVisionName";
-            this.lblVisionName.Size = new System.Drawing.Size(68, 17);
+            this.lblVisionName.Size = new System.Drawing.Size(134, 31);
             this.lblVisionName.TabIndex = 2;
             this.lblVisionName.Text = "视觉：定位";
             this.lblVisionName.Visible = false;
@@ -199,13 +199,13 @@
             this.lblTitle.Location = new System.Drawing.Point(0, 0);
             this.lblTitle.Margin = new System.Windows.Forms.Padding(0);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(32, 17);
+            this.lblTitle.Size = new System.Drawing.Size(62, 31);
             this.lblTitle.TabIndex = 1;
             this.lblTitle.Text = "参数";
             // 
             // PropDataGrid
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F);

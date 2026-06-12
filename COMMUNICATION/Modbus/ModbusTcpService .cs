@@ -4,12 +4,10 @@ using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-#region ZANE
-
-#endregion
 
 
-namespace ZANE
+
+namespace COMMUNICATION
 {
     public class ModbusTcpService : IDisposable
     {

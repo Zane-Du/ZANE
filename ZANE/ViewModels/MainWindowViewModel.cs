@@ -21,6 +21,7 @@ using Org.BouncyCastle.Asn1.X500;
 using SixLabors.ImageSharp.ColorSpaces;
 using SqlSugar;
 using System;
+//
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -45,6 +46,10 @@ using ZANE.Views;
 using static SkiaSharp.HarfBuzz.SKShaper;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
+using COMMUNICATION;
+using OpenTK.Graphics.OpenGL;
+using HELPER;
+
 
 namespace ZANE.ViewModels
 {
@@ -245,8 +250,11 @@ namespace ZANE.ViewModels
 
         #endregion
 
-        #region 字段
-        private ModbusTcpService _modbusService;
+        #region 属性和字段
+        private ModbusTcpService _modbusTcpService;
+        private ModbusAsciiService _modbusAsciiService;
+        private ModbusRtuService _modbusRtuService;
+
         private CancellationTokenSource _monitorCts;
         private bool _isMonitoring = false;
 
@@ -263,12 +271,10 @@ namespace ZANE.ViewModels
         public IniFileHelper _iniHelper;
         public IniFileHelper _iniHelperLog;
 
-        public static SPA5000Mobus plasmaCleaner1;
+        //public static SPA5000Mobus plasmaCleaner1;
 
 
-        #endregion
 
-        #region 属性
         [ObservableProperty]
         private int? pageSize = 100;
 
@@ -495,188 +501,6 @@ namespace ZANE.ViewModels
         }
 
         [RelayCommand]
-        private void Connect()
-        {
-            if (plasmaCleaner1.IsConnected)
-            {
-                AddLog("已连接，无需重复连接！");
-                return;
-            }
-            plasmaCleaner1.端口名 = ComPortsSelected switch
-            {
-                0 => "COM1",
-                1 => "COM2",
-                2 => "COM3",
-                3 => "COM4",
-                4 => "COM5",
-                5 => "COM6",
-                6 => "COM7",
-                7 => "COM8",
-                8 => "COM9",
-                9 => "COM10",
-                10 => "COM11",
-                11 => "COM12",
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-            plasmaCleaner1.波特率 = BaudRatesSelected switch
-            {
-                0 => new Framework2Core.BaudrateOptions { Text = "110" },
-                1 => new Framework2Core.BaudrateOptions { Text = "300" },
-                2 => new Framework2Core.BaudrateOptions { Text = "600" },
-                3 => new Framework2Core.BaudrateOptions { Text = "1200" },
-                4 => new Framework2Core.BaudrateOptions { Text = "2400" },
-                5 => new Framework2Core.BaudrateOptions { Text = "4800" },
-                6 => new Framework2Core.BaudrateOptions { Text = "9600" },
-                7 => new Framework2Core.BaudrateOptions { Text = "14400" },
-                8 => new Framework2Core.BaudrateOptions { Text = "19200" },
-                9 => new Framework2Core.BaudrateOptions { Text = "38400" },
-                10 => new Framework2Core.BaudrateOptions { Text = "56000" },
-                11 => new Framework2Core.BaudrateOptions { Text = "57600" },
-                12 => new Framework2Core.BaudrateOptions { Text = "115200" },
-
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-            plasmaCleaner1.数据位 = DataBitsSelected switch
-            {
-                0 => 5,
-                1 => 6,
-                2 => 7,
-                3 => 8,
-
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-            plasmaCleaner1.校验位 = ParitySelected switch
-            {
-                0 => System.IO.Ports.Parity.None,
-                1 => System.IO.Ports.Parity.Odd,
-                2 => System.IO.Ports.Parity.Even,
-                3 => System.IO.Ports.Parity.Mark,
-                4 => System.IO.Ports.Parity.Space,
-
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-            plasmaCleaner1.停止位 = StopBitsSelected switch
-            {
-                0 => System.IO.Ports.StopBits.One,
-                1 => System.IO.Ports.StopBits.OnePointFive,
-                2 => System.IO.Ports.StopBits.Two,
-
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-            plasmaCleaner1.端口名 = comPortsSelected switch
-            {
-                0 => "COM1",
-                1 => "COM2",
-                2 => "COM3",
-                3 => "COM4",
-                4 => "COM5",
-                5 => "COM6",
-                6 => "COM7",
-                7 => "COM8",
-                8 => "COM9",
-                9 => "COM10",
-                10 => "COM11",
-                11 => "COM12",
-                _ => throw new InvalidOperationException("无效的端口选择")
-            };
-
-
-            try
-            {
-
-
-
-
-
-
-                plasmaCleaner1.Open2();
-
-                _ = InitModbusAsync();
-
-                if (_modbusService != null && _modbusService.IsConnected)
-                {
-                    StartMonitor();
-                }
-
-
-
-
-
-
-                //_ = InitModbusAsync();
-
-
-            }
-            catch
-            {
-                AddLog("连接失败，请检查串口设置和设备状态！");
-                return;
-            }
-
-            Kk = plasmaCleaner1.IsConnected;
-            updatestates();
-            //MessageBox.Show("连接成功！");
-        }
-
-        [RelayCommand]
-        private async Task Connect2()
-        {
-            //if (_modbusService.IsConnected)
-            //{
-            //    AddLog("已连接网口，无需重复连接！");
-            //    return;
-            //}
-
-            try
-            {
-
-                _ = InitModbusAsync();
-                await Task.Delay(200);
-                if (_modbusService != null && _modbusService.IsConnected)
-                {
-                    StartMonitor();
-                }
-
-            }
-            catch
-            {
-                AddLog("连接失败，请检查网口设置和设备状态！");
-                return;
-            }
-
-            Kk2 = _modbusService.IsConnected;
-            updatestates();
-            //MessageBox.Show("连接成功！");
-        }
-
-
-        [RelayCommand]
-        private void DisConnect()
-        {
-
-            plasmaCleaner1.Close();
-            Kk = plasmaCleaner1.IsConnected;
-            updatestates();
-
-
-
-        }
-
-        [RelayCommand]
-        private void DisConnect2()
-        {
-            StopMonitor();
-            Kk2 = _modbusService.IsConnected;
-            updatestates();
-            Cleanup();
-
-            StopMonitor();
-            Kk2 = _modbusService.IsConnected;
-            updatestates();
-            Cleanup();
-        }
-
-        [RelayCommand]
         private async Task Record()
         {
             await record();
@@ -740,6 +564,224 @@ namespace ZANE.ViewModels
         #endregion
 
         #region 方法
+        public void INI()
+        {
+            _excelHelper = new ExcelHelper();
+
+            string iniPath = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Settings.ini");
+            string iniPathLog = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Log.ini");
+            _iniHelper = new IniFileHelper(iniPath);
+            _iniHelperLog = new IniFileHelper(iniPathLog);
+
+            LoadSettings();
+            //Kk = _modbusAsciiService.IsConnected;
+            updatestates();
+            // infoDataGrid0.LoadConfigs();
+
+            //  infoDataTable0.LoadConfigs();
+            ComPorts = new ObservableCollection<string>()
+            {
+                "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
+                "COM7", "COM8", "COM9", "COM10", "COM11", "COM12",
+            };
+            BaudRates = new ObservableCollection<string>()
+            {
+                "110","300","600","1200", "2400", "4800", "9600", "14400", "19200",
+                "38400", "56000", "57600", "115200",
+            };
+            DataBitsList = new ObservableCollection<string>()
+            {
+                                "5 bit", "6 bit", "7 bit", "8 bit",
+
+            };
+            ParityList = new ObservableCollection<string>()
+            {
+                                "NONE", "ODD", "EVEN", "MARK", "SPACE",
+
+
+            };
+            StopBitsList = new ObservableCollection<string>()
+            {
+                "1 bit", "1.5 bit", "2 bit",
+            };
+
+            Type staticType = typeof(MainWindowViewModel); //本静态类的类型
+            //加载配置文件
+            staticType.LoadStaticConfigsFromIni();
+            staticType.SaveStaticConfigsToIni();
+
+
+
+
+
+            //zane = new ObservableCollection<ZANE>();
+            //Zane.CollectionChanged += (s, e) => UpdateChart(); // 监听集合变化
+            //Zane.CollectionChanged += (s, e) => UpdateCPKChart(); // 监听集合变化
+
+
+            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateChart(); // 监听集合变化
+            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateCPKChart(); // 监听集合变化
+            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateChart4(); // 监听集合变化
+
+
+
+
+
+            ActualValueSeries = new SeriesCollection();
+            PointLabels = new List<string>();
+            YFormatter = value => value.ToString("F2"); // 格式化Y轴显示
+            ActualValueSeries2 = new SeriesCollection();
+            PointLabels2 = new List<string>();
+            YFormatter2 = value => value.ToString("F2"); // 格式化Y轴显示
+            ActualValueSeries4 = new SeriesCollection();
+            PointLabels4 = new List<string>();
+            YFormatter4 = value => value.ToString("F2"); // 格式化Y轴显示
+
+            queryDataFrom = DateTime.Now.Date;
+            queryDataTo = DateTime.Now.Date.AddDays(1);
+
+            _modbusAsciiService = new ModbusAsciiService(ComPortsSelected switch
+            {
+                0 => "COM1",
+                1 => "COM2",
+                2 => "COM3",
+                3 => "COM4",
+                4 => "COM5",
+                5 => "COM6",
+                6 => "COM7",
+                7 => "COM8",
+                8 => "COM9",
+                9 => "COM10",
+                10 => "COM11",
+                11 => "COM12",
+            }, BaudRatesSelected switch
+            {
+                0 => 110,
+                1 => 300,
+                2 => 600,
+                3 => 1200,
+                4 => 2400,
+                5 => 4800,
+                6 => 9600,
+                7 => 14400,
+                8 => 19200,
+                9 => 38400,
+                10 => 56000,
+                11 => 57600,
+                12 => 1152000,
+
+            });
+
+
+        }
+
+        #region ModbucAscii连接方法
+        [RelayCommand]
+        private void Connect()
+        {
+            try
+            {
+                _modbusAsciiService.ConnectAsync();
+            }
+            catch
+            {
+                AddLog("连接失败，请检查串口设置和设备状态！");
+                return;
+            }
+
+            Kk = _modbusAsciiService.IsConnected;
+            updatestates();
+
+        }
+
+        [RelayCommand]
+        private void DisConnect()
+        {
+
+            _modbusAsciiService.Close();
+            Kk = _modbusAsciiService.IsConnected;
+            updatestates();
+        }
+        #endregion
+
+
+        #region ModbusTCP连接方法
+        private async Task InitModbusTCPAsync()
+        {
+            if (string.IsNullOrEmpty(Ip) || string.IsNullOrEmpty(Port))
+            {
+                AddLog("Modbus配置未设置");
+                return;
+            }
+
+            _modbusTcpService = new ModbusTcpService(Ip, int.Parse(Port));
+
+            try
+            {
+                bool success = await _modbusTcpService.ConnectAsync();
+                if (success)
+                {
+                    AddLog($"Modbus连接成功 {Ip}:{Port}");
+                }
+                else
+                {
+                    AddLog("Modbus连接失败");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Modbus连接异常: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task Connect2()
+        {
+            try
+            {
+
+                _ = InitModbusTCPAsync();
+                await Task.Delay(200);
+                if (_modbusTcpService != null && _modbusTcpService.IsConnected)
+                {
+                    StartMonitor();
+                }
+
+            }
+            catch
+            {
+                AddLog("连接失败，请检查网口设置和设备状态！");
+                return;
+            }
+
+            Kk2 = _modbusTcpService.IsConnected;
+            updatestates();
+            //MessageBox.Show("连接成功！");
+        }
+
+
+
+        [RelayCommand]
+        private void DisConnect2()
+        {
+            StopMonitor();
+            Kk2 = _modbusTcpService.IsConnected;
+            updatestates();
+            Cleanup();
+
+            StopMonitor();
+            Kk2 = _modbusTcpService.IsConnected;
+            updatestates();
+            Cleanup();
+        }
+
+        #endregion
+
+
         #region 保存数据方法
         public async Task savedata()
         {
@@ -978,88 +1020,6 @@ namespace ZANE.ViewModels
 
             OnPropertyChanged(nameof(ActualValueSeries2));
 
-
-        }
-        public void INI()
-        {
-            _excelHelper = new ExcelHelper();
-
-            string iniPath = System.IO.Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "Settings.ini");
-            string iniPathLog = System.IO.Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "Log.ini");
-            _iniHelper = new IniFileHelper(iniPath);
-            _iniHelperLog = new IniFileHelper(iniPathLog);
-
-            LoadSettings();
-            plasmaCleaner1 = new SPA5000Mobus("等离子清洗机1");
-            Kk = plasmaCleaner1.IsConnected;
-            updatestates();
-            // infoDataGrid0.LoadConfigs();
-
-            //  infoDataTable0.LoadConfigs();
-            ComPorts = new ObservableCollection<string>()
-            {
-                "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
-                "COM7", "COM8", "COM9", "COM10", "COM11", "COM12",
-            };
-            BaudRates = new ObservableCollection<string>()
-            {
-                "110","300","600","1200", "2400", "4800", "9600", "14400", "19200",
-                "38400", "56000", "57600", "115200",
-            };
-            DataBitsList = new ObservableCollection<string>()
-            {
-                                "5 bit", "6 bit", "7 bit", "8 bit",
-
-            };
-            ParityList = new ObservableCollection<string>()
-            {
-                                "NONE", "ODD", "EVEN", "MARK", "SPACE",
-
-
-            };
-            StopBitsList = new ObservableCollection<string>()
-            {
-                "1 bit", "1.5 bit", "2 bit",
-            };
-
-            Type staticType = typeof(MainWindowViewModel); //本静态类的类型
-            //加载配置文件
-            staticType.LoadStaticConfigsFromIni();
-            staticType.SaveStaticConfigsToIni();
-
-
-
-
-
-            //zane = new ObservableCollection<ZANE>();
-            //Zane.CollectionChanged += (s, e) => UpdateChart(); // 监听集合变化
-            //Zane.CollectionChanged += (s, e) => UpdateCPKChart(); // 监听集合变化
-
-
-            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateChart(); // 监听集合变化
-            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateCPKChart(); // 监听集合变化
-            CurrentPumpTestDtos.CollectionChanged += (s, e) => UpdateChart4(); // 监听集合变化
-
-
-
-
-
-            ActualValueSeries = new SeriesCollection();
-            PointLabels = new List<string>();
-            YFormatter = value => value.ToString("F2"); // 格式化Y轴显示
-            ActualValueSeries2 = new SeriesCollection();
-            PointLabels2 = new List<string>();
-            YFormatter2 = value => value.ToString("F2"); // 格式化Y轴显示
-            ActualValueSeries4 = new SeriesCollection();
-            PointLabels4 = new List<string>();
-            YFormatter4 = value => value.ToString("F2"); // 格式化Y轴显示
-
-            queryDataFrom = DateTime.Now.Date;
-            queryDataTo = DateTime.Now.Date.AddDays(1);
 
         }
         private void UpdateChart()
@@ -1542,14 +1502,14 @@ namespace ZANE.ViewModels
             {
                 try
                 {
-                    if (_modbusService == null || !_modbusService.IsConnected)
+                    if (_modbusTcpService == null || !_modbusTcpService.IsConnected)
                     {
                         await Task.Delay(1000, token);
                         continue;
                     }
 
                     // 每20ms读取6061
-                    short signal = await _modbusService.ReadIntRegisterAsync(0x1798);//伺服状态
+                    short signal = await _modbusTcpService.ReadIntRegisterAsync(0x1798);//伺服状态
 
                     if (signal == 1)
                     {
@@ -1573,41 +1533,14 @@ namespace ZANE.ViewModels
 
         public void Cleanup()
         {
-            _modbusService?.Close();
+            _modbusTcpService?.Close();
         }
 
-        private async Task InitModbusAsync()
-        {
-            if (string.IsNullOrEmpty(Ip) || string.IsNullOrEmpty(Port))
-            {
-                AddLog("Modbus配置未设置");
-                return;
-            }
-
-            _modbusService = new ModbusTcpService(Ip, int.Parse(Port));
-
-            try
-            {
-                bool success = await _modbusService.ConnectAsync();
-                if (success)
-                {
-                    AddLog($"Modbus连接成功 {Ip}:{Port}");
-                }
-                else
-                {
-                    AddLog("Modbus连接失败");
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"Modbus连接异常: {ex.Message}");
-            }
-        }
 
 
         public void zero()
         {
-            plasmaCleaner1.SendCommand000();
+            _modbusAsciiService.SendCommand000();
 
         }
 
@@ -1616,13 +1549,13 @@ namespace ZANE.ViewModels
             try
             {
                 // 1. 读取4个地址
-                float val1 = await _modbusService.ReadFloatRegisterAsync(0x03FA);//当前温度
+                float val1 = await _modbusTcpService.ReadFloatRegisterAsync(0x03FA);//当前温度
               
-                float val2 = await _modbusService.ReadFloatRegisterAsync(0x1006);//温度补偿量
+                float val2 = await _modbusTcpService.ReadFloatRegisterAsync(0x1006);//温度补偿量
            
-                float val3 = await _modbusService.ReadFloatRegisterAsync(0x1270);//工艺补偿量
+                float val3 = await _modbusTcpService.ReadFloatRegisterAsync(0x1270);//工艺补偿量
                
-                float val4 = await _modbusService.ReadIntRegisterAsync(0x0FE6);//温度补偿模式
+                float val4 = await _modbusTcpService.ReadIntRegisterAsync(0x0FE6);//温度补偿模式
 
                 AddLog($"参数: {val1}, {val2}, {val3}, {val4}");
                 TemperatureCompensationMode = val1.ToString();
@@ -1636,10 +1569,10 @@ namespace ZANE.ViewModels
 
                 while (true)
                 {
-                    float flow = await _modbusService.ReadFloatRegisterAsync(0x17A2);//转矩地址
+                    float flow = await _modbusTcpService.ReadFloatRegisterAsync(0x17A2);//转矩地址
                     flowList.Add(flow);
 
-                    short status = await _modbusService.ReadIntRegisterAsync(0x1798);//伺服状态
+                    short status = await _modbusTcpService.ReadIntRegisterAsync(0x1798);//伺服状态
                     if (status == 2)
                     {
                         AddLog($"注液完成，共采集{flowList.Count}个数据点");
@@ -1669,7 +1602,7 @@ namespace ZANE.ViewModels
             while (true)  // 用while循环代替goto
             {
                 #region 启用虚拟数据/如果电子称未连接，直接跳出循环
-                if (plasmaCleaner1.IsConnected == false)
+                if (_modbusAsciiService.IsConnected == false)
                 {
                     if (VirtualDataEnabled == true)
                     {
@@ -1707,17 +1640,30 @@ namespace ZANE.ViewModels
                 }
                 #endregion
 
-                #region 读取电子称三次判断稳定性
+                #region 读取电子称三次判断稳定性(修改，需要验证)
                 // 第一次读取
-                plasmaCleaner1.SendCommand3(out k1);
+
+                // byte[] byteSendCmd1 = new byte[4] { 0x30, 0x30, 0x31, 0x3F };
+                //byte[] res1= await _modbusAsciiService.SendRawBytesAsync(byteSendCmd1);
+                // List<string> a1 = new List<string>();
+                // string asciiString1 = Helper.ConvertHexListToString(a1);
+                // k1 = Helper.ExtractWTDataBySplit(asciiString1);
+
+
+                _modbusAsciiService.SendCommand3(out k1);
+       
                 await Task.Delay(300);  // 不阻塞UI线程
 
                 // 第二次读取
-                plasmaCleaner1.SendCommand3(out k2);
+                _modbusAsciiService.SendCommand3(out k2);
+
                 await Task.Delay(300);
 
                 // 第三次读取
-                plasmaCleaner1.SendCommand3(out k3);
+                _modbusAsciiService.SendCommand3(out k3);
+
+
+
 
                 bool isStable = false;
                 if (k1 != null && k2 != null && k3 != null)
@@ -1854,14 +1800,14 @@ namespace ZANE.ViewModels
                 Wt = "0";
 
 
-               var1 = await _modbusService.ReadFloatRegisterAsync(0x03FA);//当前温度
+               var1 = await _modbusTcpService.ReadFloatRegisterAsync(0x03FA);//当前温度
               
-               var2 = await _modbusService.ReadFloatRegisterAsync(0x1006);//温度补偿量
-               var3 = await _modbusService.ReadFloatRegisterAsync(0x1270);//工艺补偿量
-               var4 = await _modbusService.ReadFloatRegisterAsync(0x17A2);//转矩
-               var5 = await _modbusService.ReadIntRegisterAsync(0x1798);//伺服状态
+               var2 = await _modbusTcpService.ReadFloatRegisterAsync(0x1006);//温度补偿量
+               var3 = await _modbusTcpService.ReadFloatRegisterAsync(0x1270);//工艺补偿量
+               var4 = await _modbusTcpService.ReadFloatRegisterAsync(0x17A2);//转矩
+               var5 = await _modbusTcpService.ReadIntRegisterAsync(0x1798);//伺服状态
 
-                var6 = await _modbusService.ReadIntRegisterAsync(0x0FE6);//温度补偿模式
+                var6 = await _modbusTcpService.ReadIntRegisterAsync(0x0FE6);//温度补偿模式
                 int aa = 0;
                 int bb = 0;
                 int cc = 0;
