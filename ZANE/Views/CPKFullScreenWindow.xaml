@@ -1,0 +1,96 @@
+﻿<Window x:Class="ZANE.Views.CPKFullScreenWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        mc:Ignorable="d"
+        Title="CPK全屏视图" 
+        WindowState="Maximized"
+        WindowStyle="None"
+        Background="#F5F7FA"
+        Height="750"
+        Width="1300"
+        KeyDown="Window_KeyDown">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" 
+                Background="#B8E2F2" 
+                CornerRadius="8,8,0,0"
+                Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="CPK趋势全屏视图" 
+                           FontSize="20" 
+                           FontWeight="Bold" 
+                           Foreground="#333333"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="1" 
+                        Content="关闭 (ESC)" 
+                        Width="100" 
+                        Height="35"
+                        Background="#F44336"
+                        Click="CloseButton_Click"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" 
+                Background="White"
+                CornerRadius="0,0,8,8"
+                Padding="20"
+                Margin="0,0,0,10">
+            <lvc:CartesianChart 
+                Series="{Binding ActualValueSeries3}"
+                DisableAnimations="True"
+                Hoverable="True"
+         
+                Margin="10">
+
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis 
+                        Title="数据点" 
+                        Labels="{Binding PointLabels2}"
+                        Foreground="#333333"
+                        FontSize="12">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator 
+                                StrokeThickness="1" 
+                                StrokeDashArray="2" 
+                                Stroke="#CCCCCC"/>
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis 
+                        Title="CPK值" 
+                        LabelFormatter="{Binding YFormatter2}"
+                        Foreground="#333333"
+                        FontSize="12">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator 
+                                StrokeThickness="1" 
+                                StrokeDashArray="2" 
+                                Stroke="#CCCCCC"/>
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+        </Border>
+
+        <TextBlock Grid.Row="2" 
+                   Text="按 ESC 键关闭窗口" 
+                   HorizontalAlignment="Center"
+                   Foreground="#666666"
+                   FontSize="12"/>
+    </Grid>
+</Window>

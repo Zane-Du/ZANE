@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Framework2Core/Framework2Core.csproj" Id="a71ed809-f3e2-4799-a39c-d1393a4c58b1" />
+  <Project Path="SQL/SQL.csproj" />
+  <Project Path="ZANE/ZANE.csproj" />
+</Solution>

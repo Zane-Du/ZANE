@@ -1,0 +1,438 @@
+﻿<Window x:Class="ZANE.Views.SearchView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZANE.Views"
+        xmlns:converters="clr-namespace:ZANE.Converters"
+        mc:Ignorable="d"
+        Title="数据查询" 
+        Height="650" 
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F7FA">
+
+    <Window.Resources>
+        <!-- 转换器 -->
+
+        <!--<local:BoolToColorConverter x:Key="BoolToColorConverter"/>-->
+
+        <!-- 基础颜色 - 改为淡蓝色 -->
+        <Color x:Key="LightBlue">#B8E2F2</Color>
+        <!-- 从 LightPink 改为 LightBlue -->
+
+        <!-- 按钮样式 -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="MinWidth" Value="80"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Background" Value="#B8E2F2"/>
+            <!-- 改为淡蓝色 -->
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#9AC9E0"/>
+                                <!-- 深一点的淡蓝色 -->
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#7CB0C9"/>
+                                <!-- 更深的淡蓝色 -->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 日期选择器样式 -->
+        <Style x:Key="ModernDatePicker" TargetType="DatePicker">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#B8E2F2"/>
+            <!-- 改为淡蓝色 -->
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- 标签样式 -->
+        <Style x:Key="ModernLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5,0"/>
+        </Style>
+
+        <!-- 卡片样式 -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" 
+                                     ShadowDepth="2" 
+                                     Opacity="0.1"
+                                     Color="#888888"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ListView样式 -->
+        <Style x:Key="ModernListView" TargetType="ListView">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- 主布局 -->
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 查询条件栏 -->
+        <Border Grid.Row="0" 
+                Style="{StaticResource CardStyle}"
+                Margin="0,0,0,10">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 开始日期 -->
+                <TextBlock Grid.Column="0" 
+                           Text="开始日期:" 
+                           Style="{StaticResource ModernLabel}"
+                           Margin="10,0"/>
+                <DatePicker Grid.Column="1" 
+                            Style="{StaticResource ModernDatePicker}"
+                            SelectedDate="{Binding QueryDataFrom}"
+                            Width="150"
+                            Margin="5,0"/>
+
+                <!-- 结束日期 -->
+                <TextBlock Grid.Column="2" 
+                           Text="结束日期:" 
+                           Style="{StaticResource ModernLabel}"
+                           Margin="10,0"/>
+                <DatePicker Grid.Column="3" 
+                            Style="{StaticResource ModernDatePicker}"
+                            SelectedDate="{Binding QueryDataTo}"
+                            Width="150"
+                            Margin="5,0"/>
+
+                <!-- 按钮区 -->
+                <Button Grid.Column="5" 
+                        Content="查询" 
+                        Style="{StaticResource ModernButton}"
+                        Command="{Binding QueryConditionCommand}"
+                        Width="100"
+                        Margin="5,0"/>
+
+                <Button Grid.Column="6" 
+                        Content="导出CSV" 
+                        Style="{StaticResource ModernButton}"
+                        Command="{Binding ExportExcelCommand}"
+                        Width="100"
+                        Margin="5,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 数据列表 -->
+        <Border Grid.Row="1" 
+                Style="{StaticResource CardStyle}"
+                Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 列表标题 - 包含统计信息 -->
+                <Border Grid.Row="0" 
+                        Background="#B8E2F2"  
+                    CornerRadius="6,6,0,0"
+                        Padding="10"
+                        Margin="0,0,0,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 标题 -->
+                        <TextBlock Grid.Column="0" 
+                                   Text="查询结果" 
+                                   Foreground="#333333" 
+                                   FontSize="16" 
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+
+                        <!-- 统计信息 -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                            <TextBlock Text="总数:" Foreground="#666666" Margin="0,0,5,0"/>
+                            <TextBlock Text="" Foreground="#2196F3" FontWeight="Bold" Margin="0,0,15,0"/>
+                            <!-- 改为蓝色 -->
+
+                            <TextBlock Text="OK:" Foreground="#666666" Margin="0,0,5,0"/>
+                            <TextBlock Text="{}" Foreground="#4CAF50" FontWeight="Bold" Margin="0,0,5,0"/>
+                            <TextBlock Text="" Foreground="#4CAF50" Margin="0,0,15,0"/>
+
+                            <TextBlock Text="NG:" Foreground="#666666" Margin="0,0,5,0"/>
+                            <TextBlock Text="{}" Foreground="#F44336" FontWeight="Bold" Margin="0,0,5,0"/>
+                            <TextBlock Text="()" Foreground="#F44336"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- ListView -->
+                <ListView Grid.Row="1" 
+                          ItemsSource="{Binding HistoryPumpTestDtos}"
+                          Style="{StaticResource ModernListView}"
+                          BorderThickness="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#B8E2F2"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#F5F7FA"/>
+
+                        <Style x:Key="GridViewColumnHeaderStyle" TargetType="GridViewColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="5,3"/>
+                            <Setter Property="Background" Value="#E8F4FA"/>
+                            <!-- 改为淡蓝色背景 -->
+                            <Setter Property="BorderBrush" Value="#B8E2F2"/>
+                            <!-- 改为淡蓝色 -->
+                            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        </Style>
+
+                        <Style x:Key="CellTextBlockStyle" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="5,2"/>
+                        </Style>
+
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="MinHeight" Value="30"/>
+                            <Style.Triggers>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="Background" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="#E8F4FA"/>
+                                    <!-- 改为淡蓝色背景 -->
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.Resources>
+
+                    <ListView.View>
+                        <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
+                            <GridViewColumn Width="70" Header="编号">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Id}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="次数">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding BatchCount}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+
+                            <GridViewColumn Width="70" Header="型号">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 型号}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="批次">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 批次}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="速度">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 速度}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="目标值">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 目标值}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="实际值">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ActualValue}" 
+                                                   Foreground="#2196F3" 
+                                                   FontWeight="Bold"
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="温度">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 温度}" 
+                                                   Foreground="#2196F3" 
+                                                   FontWeight="Bold"
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="密度">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Density}" 
+                                                   Foreground="#2196F3" 
+                                                   FontWeight="Bold"
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="70" Header="密封圈">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 密封圈}" 
+                                                   Foreground="#2196F3" 
+                                                   FontWeight="Bold"
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+
+                            <GridViewColumn Width="140" Header="操作员">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 操作员}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="160" Header="录入时间">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding CreateTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" 
+                                                   Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="100" Header="温度补偿模式">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 温度补偿模式}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="80" Header="温度补偿量">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 温度补偿量}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="80" Header="工艺补偿量">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 工艺补偿量}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="280" Header="转矩">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding 转矩}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Border>
+
+        <!-- 状态栏 - 包含Step3信息和状态信息 -->
+        <Border Grid.Row="2" 
+                Background="#E8F4FA" 
+            CornerRadius="6"
+                Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Step3信息（查询状态） -->
+                <TextBlock Grid.Column="0" 
+                           Text="" 
+                           Foreground="#666666"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Margin="0,0,20,0"/>
+
+                <!-- 状态信息 -->
+                <TextBlock Grid.Column="1" 
+                           Text="" 
+                           Foreground="#666666"
+                           FontSize="12"
+                           TextWrapping="Wrap"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,1168 @@
+﻿<Window x:Class="ZANE.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:local="clr-namespace:ZANE.Views"
+        mc:Ignorable="d"
+        Title="精朗泵测试软件" 
+        WindowState="Maximized"
+
+        Height="717" 
+        Width="896"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F7FA">
+
+    <!-- 窗口资源：定义样式（保持不变） -->
+    <Window.Resources>
+        <!-- 基础颜色 - 改为淡蓝色调 -->
+        <Color x:Key="PrimaryColor">#2196F3</Color>
+        <Color x:Key="PrimaryDarkColor">#1976D2</Color>
+        <Color x:Key="SuccessColor">#4CAF50</Color>
+        <Color x:Key="WarningColor">#FF9800</Color>
+        <Color x:Key="DangerColor">#F44336</Color>
+        <Color x:Key="TextColor">#333333</Color>
+        <Color x:Key="LightGray">#E0E0E0</Color>
+        <Color x:Key="LightBlue">#B8E2F2</Color>
+
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="MinWidth" Value="70"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="Background" Value="#B8E2F2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#9AC9E0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#7CB0C9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="White"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="3,0"/>
+        </Style>
+
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#B8E2F2"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                  Grid.Column="2" 
+                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                  Background="White"
+                                  BorderBrush="#B8E2F2"  
+                                BorderThickness="2">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentPresenter Grid.Column="0" 
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Margin="5,0,0,0"
+                                                          Content="{Binding SelectionBoxItem, RelativeSource={RelativeSource AncestorType=ComboBox}}"/>
+                                                <Path Grid.Column="1" 
+                                              Data="M0,0 L4,4 L8,0" 
+                                              Fill="#B8E2F2"  
+                                                    HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="5"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <Popup x:Name="Popup" 
+                           IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                           Placement="Bottom"
+                           HorizontalOffset="0"
+                           VerticalOffset="2"
+                           Width="{Binding ActualWidth, ElementName=ToggleButton}">
+                                <Border BorderBrush="#B8E2F2"  
+                                    BorderThickness="2" 
+                                CornerRadius="4"
+                                Background="White">
+                                    <ScrollViewer>
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="5"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="Border" 
+                                    Background="Transparent"
+                                    Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="#B8E2F2"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" 
+                                     ShadowDepth="2" 
+                                     Opacity="0.1"
+                                     Color="#888888"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernListView" TargetType="ListView">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="#B8E2F2" 
+                            BorderThickness="1,1,1,0"
+                                CornerRadius="6,6,0,0"
+                                Margin="0,0,2,0">
+                            <ContentPresenter x:Name="ContentSite"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              ContentSource="Header"
+                                              Margin="12,6"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#B8E2F2"/>
+                                <Setter Property="Foreground" Value="#333333"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#D4ECFA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- 主布局 - 使用Viewbox实现整体缩放 -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Viewbox让内容随窗口缩放 -->
+        <Viewbox Stretch="Uniform">
+            <Grid Width="896" Height="717">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="190"/>
+                </Grid.RowDefinitions>
+
+                <!-- ========== 顶部TabControl ========== -->
+                <Border Grid.Row="0" 
+                        Style="{StaticResource CardStyle}"
+                        Margin="10,10,10,5"
+                        Height="150">
+                    <TabControl>
+                        <!-- Tab 1: 控制面板（包含批次） -->
+                        <TabItem Header="控制面板1">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 第一行 -->
+                                <!-- 串口选择 -->
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="5,0">
+                                    <TextBlock Text="串口:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                    <ComboBox Width="120" 
+                                              Style="{StaticResource ModernComboBox}"
+                                              ItemsSource="{Binding ComPorts}"
+                                              SelectedIndex="{Binding ComPortsSelected}"/>
+                                </StackPanel>
+
+                                <!-- 按钮组1：连接、断开、去皮 -->
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                                    <Button Content="{Binding ButtonContent}" 
+                                            Style="{StaticResource ModernButton}"
+                                            Background="{Binding ButtonBackground}"
+                                            Foreground="#ffffff"
+                                            Width="65" Cursor="Hand"/>
+                                    <Button Content="读取" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding RecordCommand}"
+                                              Foreground="Red"
+                                            Width="65" Margin="10,0,3,0"/>
+                                    <Button Content="去皮" 
+                                              Style="{StaticResource ModernButton}"
+                                              Command="{Binding ZeroCommand}"
+                                              Foreground="Red"
+
+                                              Width="65" Margin="5,0,3,0" Cursor="Hand"/>
+                                    <Button Content="刷新" 
+Style="{StaticResource ModernButton}"
+Command="{Binding RefreshDataCommand}"
+Width="65" Margin="0,0,3,0"/>
+                             
+
+
+                                </StackPanel>
+
+                                <!-- 按钮组2：读取、模拟、查询历史 -->
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Margin="10,0">
+                                    <Button Content="连接" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding ConnectCommand}"
+                                            Width="65" Margin="0,0,3,0"/>
+                                    <Button Content="断开" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding DisConnectCommand}"
+                                            Width="65" Margin="0,0,3,0"/>
+
+
+                                </StackPanel>
+
+                                <!-- 当前CPK -->
+                                <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0">
+                                    
+
+                                </StackPanel>
+
+                                <!-- 第二行：批次 -->
+                                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,10,5,0" Cursor="">
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="批次:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Num2}" Style="{StaticResource ModernTextBox}" Width="70"/>
+                                    </StackPanel>
+                                    <CheckBox Content="自动去皮" IsChecked="{Binding AutoTareEnabled}" VerticalAlignment="Center" FontSize="13" Foreground="#333333">
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="CheckBox">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Border Width="16" Height="16" 
+                                                                        CornerRadius="3" 
+                                                                        BorderThickness="2"
+                                                                        BorderBrush="#B8E2F2"  
+                                                                        Background="White"
+                                                                        Margin="0,0,3,0">
+                                                                    <Path x:Name="CheckMark" 
+                                                                          Data="M4,8 L7,11 L13,4" 
+                                                                          Stroke="#2196F3"  
+                                                                          StrokeThickness="2"
+                                                                          Visibility="Collapsed"/>
+                                                                </Border>
+                                                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                                                            </StackPanel>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsChecked" Value="True">
+                                                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+
+
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                                        <TextBlock Text="当前重量:" Style="{StaticResource ModernLabel}" FontWeight="Bold" Foreground="#2196F3" Width="70"/>
+                                        <Border Background="#ffffff" CornerRadius="4" Padding="8,3">
+                                            <TextBlock Text="{Binding Wt}" FontSize="16" FontWeight="Bold" Foreground="#2196F3" MinWidth="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                                        <TextBlock Text="当前CPK:" Style="{StaticResource ModernLabel}" FontWeight="Bold" Foreground="#2196F3" Width="70"/>
+                                        <Border Background="#ffffff" CornerRadius="4" Padding="8,3">
+                                            <TextBlock Text="{Binding WtCPK}" FontSize="16" FontWeight="Bold" Foreground="#2196F3" MinWidth="30" VerticalAlignment="Center"  HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <Button Content="保存数据" 
+                                Style="{StaticResource ModernButton}"
+                                 Command="{Binding SaveDataCommand}"
+                                 Width="65" Margin="0,0,3,0" Cursor="Hand"/>
+                                    <Button Content="查询历史" 
+                                               Style="{StaticResource ModernButton}"
+                                               Command="{Binding SearchCommand}"
+                                            Margin="5,0,3,0"
+                                               Width="75"/>
+
+                                    <!-- 新增：放大CPK按钮 -->
+                                    <Button Content="CPK曲线" 
+                           Style="{StaticResource ModernButton}"
+                           Command="{Binding ShowCPKFullScreenCommand}"
+                           Width="70" Margin="3,0,0,0" Cursor="Hand"
+                           />
+
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+
+
+                        <!-- Tab 3: 参数设置（保持不变） -->
+                        <TabItem Header="控制面板2">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 第一行：串口参数 -->
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,5">
+                                    
+                                   
+                                  
+                                    
+                      
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="ip地址:" Style="{StaticResource ModernLabel}" Width="60"/>
+                                        <TextBox Text="{Binding Ip}" Style="{StaticResource ModernTextBox}" Width="145"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="端口号:" Style="{StaticResource ModernLabel}" Width="65"/>
+                                        <TextBox Text="{Binding Port}" Style="{StaticResource ModernTextBox}" Width="60"/>
+                                    </StackPanel>
+                                    <Button Content="{Binding ButtonContent2}" 
+                                            Style="{StaticResource ModernButton}"
+                                            Background="{Binding ButtonBackground2}"
+                                            Foreground="#ffffff"
+                                            Width="65" Cursor="Hand"/>
+                                    <Button Content="读取" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding Record2Command}"
+                                              Foreground="Red"
+                                            Width="65" Margin="10,0,3,0"/>
+
+                                    <Button Content="连接" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding Connect2Command}"
+                                            Width="65" Margin="10,0,3,0"/>
+                                    <Button Content="断开" 
+                                            Style="{StaticResource ModernButton}"
+                                            Command="{Binding DisConnect2Command}"
+                                            Width="65" Margin="10,0,3,0"/>
+
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="转矩采样频率(ms):" Style="{StaticResource ModernLabel}" Width="105"/>
+                                        <TextBox Text="{Binding Frequency}" Style="{StaticResource ModernTextBox}" Width="60"/>
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                                <!-- 第一行：串口参数 -->
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,5">
+
+
+
+
+
+                                    <CheckBox Content="启用虚拟数据" IsChecked="{Binding VirtualDataEnabled}" VerticalAlignment="Center" FontSize="13" Foreground="#333333">
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="CheckBox">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Border Width="16" Height="16" 
+                                                                        CornerRadius="3" 
+                                                                        BorderThickness="2"
+                                                                        BorderBrush="#B8E2F2"  
+                                                                        Background="White"
+                                                                        Margin="0,0,3,0">
+                                                                    <Path x:Name="CheckMark" 
+                                                                          Data="M4,8 L7,11 L13,4" 
+                                                                          Stroke="#2196F3"  
+                                                                          StrokeThickness="2"
+                                                                          Visibility="Collapsed"/>
+                                                                </Border>
+                                                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                                                            </StackPanel>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsChecked" Value="True">
+                                                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+
+                                    <StackPanel Orientation="Horizontal" Margin="40,0">
+                                        <TextBlock Text="虚拟数据上限:" Style="{StaticResource ModernLabel}" Width="105"/>
+                                        <TextBox Text="{Binding VirtualDataMax}" Style="{StaticResource ModernTextBox}" Width="120"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="虚拟数据下限:" Style="{StaticResource ModernLabel}" Width="105"/>
+                                        <TextBox Text="{Binding VirtualDataMin}" Style="{StaticResource ModernTextBox}" Width="120"/>
+                                    </StackPanel>
+
+                                </StackPanel>
+
+
+
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Tab 2: 参数设置（保持不变） -->
+                        <TabItem Header="参数设置">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 第一行：串口参数 -->
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5">
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="波特率:" Style="{StaticResource ModernLabel}" Width="50"/>
+                                        <ComboBox Width="70" 
+                                                  Style="{StaticResource ModernComboBox}"
+                                                  SelectedIndex="{Binding BaudRatesSelected}"
+                                                  ItemsSource="{Binding BaudRates}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="数据位:" Style="{StaticResource ModernLabel}" Width="50"/>
+                                        <ComboBox Width="50" 
+                                                  Style="{StaticResource ModernComboBox}"
+                                                  SelectedIndex="{Binding DataBitsSelected}"
+                                                  ItemsSource="{Binding DataBitsList}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="校验位:" Style="{StaticResource ModernLabel}" Width="50"/>
+                                        <ComboBox Width="65" 
+                                                  Style="{StaticResource ModernComboBox}"
+                                                  SelectedIndex="{Binding ParitySelected}"
+                                                  ItemsSource="{Binding ParityList}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="停止位:" Style="{StaticResource ModernLabel}" Width="50"/>
+                                        <ComboBox Width="65" 
+                                                  Style="{StaticResource ModernComboBox}"
+                                                  SelectedIndex="{Binding StopBitsSelected}"
+                                                  ItemsSource="{Binding StopBitsList}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="延时:" Style="{StaticResource ModernLabel}" Width="40"/>
+                                        <TextBox Text="{Binding AutoTareDelay}" Style="{StaticResource ModernTextBox}" Width="45"/>
+                                        <TextBlock Text="ms" Style="{StaticResource ModernLabel}" Width="30" HorizontalAlignment="Left"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="型号:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Num}" Style="{StaticResource ModernTextBox}" Width="40"/>
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                                <!-- 第二行：其他参数 -->
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5" Cursor="">
+
+
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="操作员:" Style="{StaticResource ModernLabel}" Width="50"/>
+                                        <TextBox Text="{Binding OperatorName}" Style="{StaticResource ModernTextBox}" Width="75"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="温度:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Temp}" Style="{StaticResource ModernTextBox}" Width="50"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="密度:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding P}" Style="{StaticResource ModernTextBox}" Width="50"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="速度:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Speed}" Style="{StaticResource ModernTextBox}" Width="50"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="目标:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Target}" Style="{StaticResource ModernTextBox}" Width="50"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="上限:" Style="{StaticResource ModernLabel}" Width="35"/>
+                                        <TextBox Text="{Binding Max}" Style="{StaticResource ModernTextBox}" Width="55"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="下限:" Style="{StaticResource ModernLabel}" Width="25" Cursor=""/>
+                                        <TextBox Text="{Binding Min}" Style="{StaticResource ModernTextBox}" Width="55"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- 保存按钮 -->
+                                <Button Grid.Row="0" Grid.Column="1" 
+                                        Content="保存参数" 
+                                        Style="{StaticResource ModernButton}"
+                                        Command="{Binding SaveCommand}"
+                                        Width="50"
+                                        Height="26"
+                                        Margin="10,5,0,5"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" Cursor="Hand"/>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5" Cursor="">
+                                    <StackPanel Orientation="Horizontal" Margin="3,0">
+                                        <TextBlock Text="密封圈:" Style="{StaticResource ModernLabel}" Width="45"/>
+                                        <TextBox Text="{Binding Circle}" Style="{StaticResource ModernTextBox}" Width="50"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+
+                            </Grid>
+                        </TabItem>
+
+                    </TabControl>
+                </Border>
+
+                <!-- ========== 中间ListView ========== -->
+                <Border Grid.Row="1" 
+                        Style="{StaticResource CardStyle}"
+                        Margin="10,5,10,5">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" 
+                                Background="#B8E2F2" 
+                                CornerRadius="6,6,0,0"
+                                Padding="8"
+                                Margin="0,0,0,5">
+                            <TextBlock Text="测试数据记录" 
+                                       Foreground="#333333" 
+                                       FontSize="15" 
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <!--<ListView Grid.Row="1" 
+                                  ItemsSource="{Binding DisplayPumpTestDtos}"
+                                  Style="{StaticResource ModernListView}"
+                                  BorderThickness="0"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#B8E2F2"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#F5F7FA"/>
+
+                                <Style x:Key="GridViewColumnHeaderStyle" TargetType="GridViewColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="3,2"/>
+                                    <Setter Property="Background" Value="#E8F4FA"/>
+                                    <Setter Property="BorderBrush" Value="#B8E2F2"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+
+                                <Style x:Key="CellTextBlockStyle" TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="3,1"/>
+                                    <Setter Property="FontSize" Value="12"/>
+                                </Style>
+
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="MinHeight" Value="25"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                            <Setter Property="Background" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                            <Setter Property="Background" Value="#E8F4FA"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.Resources>
+
+                            <ListView.View>
+                                <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
+                                    <GridViewColumn Width="80" Header="操作">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="40" Height="20" Padding="0"
+                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                        Style="{StaticResource ModernButton}"
+                                                        Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding .}"
+                                                        Content="删除" FontSize="12" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="次数">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding BatchCount}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="型号">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Model}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="批次">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Batch}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="速度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Speed}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="目标值">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding TargetValue}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="实际值">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding ActualValue}" Foreground="#2196F3" FontWeight="Bold" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="温度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Temperature}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="密度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Density}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="密封圈">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding SealingRing}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="140" Header="操作员">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Operator}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="230" Header="录入时间">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding CreateTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>-->
+                        <ScrollViewer Grid.Row="1"  HorizontalScrollBarVisibility="Auto"  VerticalScrollBarVisibility="Disabled" CanContentScroll="True">
+                            <ListView 
+                                  ItemsSource="{Binding DisplayPumpTestDtos}"
+                                  Style="{StaticResource ModernListView}"
+                                  BorderThickness="0"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#B8E2F2"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#F5F7FA"/>
+
+                                <Style x:Key="GridViewColumnHeaderStyle" TargetType="GridViewColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="3,2"/>
+                                    <Setter Property="Background" Value="#E8F4FA"/>
+                                    <Setter Property="BorderBrush" Value="#B8E2F2"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+
+                                <Style x:Key="CellTextBlockStyle" TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="3,1"/>
+                                    <Setter Property="FontSize" Value="12"/>
+                                </Style>
+
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="MinHeight" Value="25"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                            <Setter Property="Background" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                            <Setter Property="Background" Value="#E8F4FA"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.Resources>
+
+                            <ListView.View>
+                                <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
+                                    <GridViewColumn Width="80" Header="操作">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Width="40" Height="20" Padding="0"
+                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                        Style="{StaticResource ModernButton}"
+                                                        Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding .}"
+                                                        Content="删除" FontSize="12" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="次数">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding BatchCount}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="型号">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 型号}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="批次">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 批次}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="速度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 速度}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="目标值">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 目标值}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="80" Header="实际值">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding ActualValue}" Foreground="#2196F3" FontWeight="Bold" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="温度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 温度}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="密度">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Density}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="80" Header="密封圈">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 密封圈}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="140" Header="操作员">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                    <TextBlock Text="{Binding 操作员}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Width="230" Header="录入时间">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding CreateTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Style="{StaticResource CellTextBlockStyle}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                        <GridViewColumn Width="80" Header="温度补偿模式">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding 温度补偿模式}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="80" Header="温度补偿量">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding 温度补偿量}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="80" Header="工艺补偿量">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding 工艺补偿量}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="280" Header="转矩">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding 转矩}"  Style="{StaticResource CellTextBlockStyle}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                    </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <!-- ========== 底部TabControl ========== -->
+                <Border Grid.Row="2" 
+                        Style="{StaticResource CardStyle}"
+                        Margin="10,5,10,10"
+                        Height="180">
+                    <TabControl >
+                        <TabItem Header="系统日志">
+                            <Grid Margin="5" Height="130">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" 
+                                            Orientation="Horizontal" 
+                                            HorizontalAlignment="Right"
+                                            Margin="0,0,0,3">
+                                    <Button Content="清空日志" 
+                                            Style="{StaticResource ModernButton}"
+                                            Width="70"
+                                            Height="25"
+                                            FontSize="12"
+                                            Command="{Binding ClearLogCommand}"/>
+                                </StackPanel>
+
+                                <ListView Grid.Row="1" 
+                                          ItemsSource="{Binding LogMessages}"
+                                          Background="White"
+                                          BorderBrush="#B8E2F2"  
+                                          BorderThickness="1"
+                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                          Height="95">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="1" Padding="3">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" 
+                                                               Text="{Binding Time, StringFormat='HH:mm:ss'}" 
+                                                               Foreground="#2196F3"  
+                                                               FontWeight="Bold"
+                                                               Margin="0,0,5,0"
+                                                               FontSize="11"/>
+                                                    <TextBlock Grid.Column="1" 
+                                                               Text="{Binding Message}"
+                                                               TextWrapping="Wrap"
+                                                               FontSize="11"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+
+                      
+                        <TabItem Header="重量趋势">
+                            <Border Background="#F8F9FA" CornerRadius="6" Padding="5" Height="130">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" 
+                                               Text="重量变化趋势" 
+                                               FontWeight="SemiBold"
+                                               Foreground="#666666"
+                                               Margin="5,0"
+                                               HorizontalAlignment="Center"
+                                               FontSize="12"/>
+                                    <lvc:CartesianChart Grid.Row="1" 
+                                                        Series="{Binding ActualValueSeries}"
+                                                        DisableAnimations="True"
+                                                        Hoverable="True"
+                                                     
+                                                        Height="120">
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Title="数据点" 
+                                                     Labels="{Binding PointLabels}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisX>
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis Title="重量(g)" 
+                                                     LabelFormatter="{Binding YFormatter}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                        
+                        <TabItem Header="CPK趋势">
+                            <Border Background="#F8F9FA" CornerRadius="6" Padding="5" Height="130">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" 
+                                               Text="CPK变化趋势" 
+                                               FontWeight="SemiBold"
+                                               Foreground="#666666"
+                                               Margin="5,0"
+                                               HorizontalAlignment="Center"
+                                               FontSize="12"/>
+                                    <lvc:CartesianChart Grid.Row="1" 
+                                                        Series="{Binding ActualValueSeries2}"
+                                                        DisableAnimations="True"
+                                                        Hoverable="True"
+                                         
+                                                        Height="120">
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Title="数据点" 
+                                                     Labels="{Binding PointLabels2}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisX>
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis Title="CPK值" 
+                                                     LabelFormatter="{Binding YFormatter2}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                        <TabItem Header="转矩曲线">
+                            <Border Background="#F8F9FA" CornerRadius="6" Padding="5" Height="130">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" 
+                                               Text="转矩曲线" 
+                                               FontWeight="SemiBold"
+                                               Foreground="#666666"
+                                               Margin="5,0"
+                                               HorizontalAlignment="Center"
+                                               FontSize="12"/>
+                                    <lvc:CartesianChart Grid.Row="1" 
+                                                        Series="{Binding ActualValueSeries4}"
+                                                        DisableAnimations="True"
+                                                        Hoverable="True"
+                                                     
+                                                        Height="120">
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Title="数据点" 
+                                                     Labels="{Binding PointLabels}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisX>
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis Title="转矩" 
+                                                     LabelFormatter="{Binding YFormatter}"
+                                                     Foreground="#666666"
+                                                     FontSize="9"/>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+
+
+                    </TabControl>
+                </Border>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</Window>
